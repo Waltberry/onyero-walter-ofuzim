@@ -1,4 +1,3 @@
-# backend/server.py
 from fastapi import FastAPI, APIRouter
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
@@ -58,10 +57,6 @@ class StatusCheck(BaseModel):
 class StatusCheckCreate(BaseModel):
     client_name: str
 
-@api.get("/")
-async def root():
-    return {"message": "Hello World"}
-
 @api.post("/status", response_model=StatusCheck)
 async def create_status_check(input: StatusCheckCreate):
     obj = StatusCheck(**input.model_dump())
@@ -81,16 +76,28 @@ async def get_status_checks():
             r["timestamp"] = datetime.fromisoformat(r["timestamp"])
     return rows
 
-# --- mount feature routers (inject db when supported)
+# --- inject DB into feature routers (if they support it)
 if hasattr(contact_routes, "set_db"):
     contact_routes.set_db(db)
 if hasattr(analytics_routes, "set_db"):
     analytics_routes.set_db(db)
 
+# --- mount feature routers
 api.include_router(cv_routes.router)         # /api/cv
 api.include_router(contact_routes.router)    # /api/contact
 api.include_router(analytics_routes.router)  # /api/analytics
 app.include_router(api)
+
+# --- tiny Mongo debug endpoint
+@api.get("/debug/mongo")
+async def debug_mongo():
+    if db is None:
+        return {"connected": False, "reason": "db is None"}
+    try:
+        res = await db.command("ping")
+        return {"connected": True, "reply": res}
+    except Exception as e:
+        return {"connected": False, "error": str(e)}
 
 # --- shutdown
 @app.on_event("shutdown")
@@ -99,4 +106,7 @@ async def shutdown_db():
         client.close()
 
 # logging
-logging.basicConfig(level=os.getenv("LOG_LEVEL", "INFO"), format="%(asctime)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=os.getenv("LOG_LEVEL", "INFO"),
+    format="%(asctime)s - %(levelname)s - %(message)s"
+)

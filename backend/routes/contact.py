@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, Request
 from typing import Optional, Any
 from models.contact import ContactSubmissionCreate, ContactSubmission, ContactResponse
 import logging
@@ -21,41 +21,37 @@ async def submit_contact_form(contact: ContactSubmissionCreate, request: Request
     Accept a contact form submission.
     - Validates input with Pydantic (subject optional, message >= 10 chars).
     - If Mongo is configured, persists to 'contact_submissions'.
-    - Always returns a success response (doesn't block UI if DB is down).
+    - Always returns success for portfolio UX (we only log DB errors).
     """
-    try:
-        submission = ContactSubmission(
-            **contact.model_dump(),
-            ip_address=(request.client.host if request.client else None),
-            user_agent=request.headers.get("user-agent"),
-        )
+    submission = ContactSubmission(
+        **contact.model_dump(),
+        ip_address=(request.client.host if request.client else None),
+        user_agent=request.headers.get("user-agent"),
+    )
 
-        if _db is not None:
+    if _db is not None:
+        try:
             await _db.contact_submissions.insert_one(submission.model_dump())
             logger.info("Stored contact submission from %s", contact.email)
-        else:
-            logger.warning("No DB configured; accepted contact but did not persist.")
+        except Exception as e:
+            logger.exception("DB insert failed; returning success anyway: %s", e)
+    else:
+        logger.warning("No DB configured; accepted contact but did not persist.")
 
-        return ContactResponse()
-
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.exception("Error submitting contact form: %s", e)
-        raise HTTPException(status_code=500, detail="Failed to submit contact form. Please try again later.")
+    return ContactResponse()
 
 @router.get("/submissions")
 async def get_contact_submissions(skip: int = 0, limit: int = 50):
     """
-    Admin listing (no auth yet). Returns empty list if DB isn't configured.
+    Admin listing (no auth yet). Returns empty list if DB isn't configured or errors.
     """
-    try:
-        if _db is None:
-            return {"submissions": [], "count": 0}
+    if _db is None:
+        return {"submissions": [], "count": 0}
 
+    try:
         cursor = (
             _db.contact_submissions
-            .find({}, {"_id": 0})  # hide Mongo _id
+            .find({}, {"_id": 0})
             .sort("created_at", -1)
             .skip(int(skip))
             .limit(int(limit))
@@ -64,4 +60,4 @@ async def get_contact_submissions(skip: int = 0, limit: int = 50):
         return {"submissions": submissions, "count": len(submissions)}
     except Exception as e:
         logger.exception("Error fetching submissions: %s", e)
-        raise HTTPException(status_code=500, detail="Failed to fetch submissions")
+        return {"submissions": [], "count": 0}

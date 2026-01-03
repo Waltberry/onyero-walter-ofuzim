@@ -1,0 +1,23 @@
+# render.yaml  (root of repo)
+services:
+  - type: web
+    name: portfolio-api
+    env: python
+    plan: free
+    region: oregon
+    rootDir: backend
+    buildCommand: |
+      pip install --upgrade pip
+      (pip install -r requirements.lock.txt) || (pip install -r requirements.txt)
+    startCommand: uvicorn server:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/health
+    envVars:
+      - key: LOG_LEVEL
+        value: INFO
+      - key: DB_NAME
+        value: portfolio
+      - key: CORS_ORIGINS
+        # Add your Pages domain(s) here; you can update later in the Render UI.
+        value: https://Waltberry.github.io,https://Waltberry.github.io/onyero-walter-ofuzim
+      - key: MONGO_URL   # add the actual value in the Render dashboard (not committed)
+        sync: false

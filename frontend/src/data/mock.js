@@ -2,7 +2,7 @@
 export const portfolioData = {
   profile: {
     fullName: "Onyero Walter Ofuzim",
-    title: "Data & Software Engineer",
+    title: "Data & Engineer",
     tagline: "Data Professional (Analyst / Data Engineer) | Software Engineer | Control Systems (System ID/MPC) | Network Engineer",
     email: "onyero.ofuzim@gmail.com",
     phone: "+1 403 605 0955",

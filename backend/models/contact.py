@@ -1,3 +1,5 @@
+# backend/models/contact.py
+
 from pydantic import BaseModel, EmailStr, Field, ConfigDict
 from datetime import datetime, timezone
 from typing import Optional

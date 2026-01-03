@@ -34,7 +34,7 @@ if MONGO_URL:
         logging.exception("Mongo init failed; continuing without DB")
 
 # --- CORS
-cors_origins = os.getenv("CORS_ORIGINS", "*").split(",")
+cors_origins = [o for o in os.getenv("CORS_ORIGINS", "*").split(",") if o]
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
@@ -65,7 +65,7 @@ async def root():
 @api.post("/status", response_model=StatusCheck)
 async def create_status_check(input: StatusCheckCreate):
     obj = StatusCheck(**input.model_dump())
-    if db:
+    if db is not None:
         doc = obj.model_dump()
         doc["timestamp"] = doc["timestamp"].isoformat()
         await db.status_checks.insert_one(doc)
@@ -73,7 +73,7 @@ async def create_status_check(input: StatusCheckCreate):
 
 @api.get("/status", response_model=List[StatusCheck])
 async def get_status_checks():
-    if not db:
+    if db is None:
         return []
     rows = await db.status_checks.find({}, {"_id": 0}).to_list(1000)
     for r in rows:
@@ -95,7 +95,7 @@ app.include_router(api)
 # --- shutdown
 @app.on_event("shutdown")
 async def shutdown_db():
-    if client:
+    if client is not None:
         client.close()
 
 # logging

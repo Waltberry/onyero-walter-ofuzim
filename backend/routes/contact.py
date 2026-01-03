@@ -4,7 +4,6 @@ from models.contact import ContactSubmissionCreate, ContactSubmission, ContactRe
 import logging
 
 logger = logging.getLogger(__name__)
-
 router = APIRouter(prefix="/contact", tags=["contact"])
 
 # DB handle is injected from server.py via set_db()
@@ -19,7 +18,7 @@ def set_db(database):
 async def submit_contact_form(contact: ContactSubmissionCreate, request: Request):
     """
     Accept a contact form submission.
-    - Validates input with Pydantic (subject optional, message >= 10 chars).
+    - Validates input (subject optional, message >= 10 chars).
     - If Mongo is configured, persists to 'contact_submissions'.
     - Always returns success for portfolio UX (we only log DB errors).
     """
@@ -43,7 +42,7 @@ async def submit_contact_form(contact: ContactSubmissionCreate, request: Request
 @router.get("/submissions")
 async def get_contact_submissions(skip: int = 0, limit: int = 50):
     """
-    Admin listing (no auth yet). Returns empty list if DB isn't configured or errors.
+    Admin listing (no auth yet). Returns empty list if DB isn't configured or on errors.
     """
     if _db is None:
         return {"submissions": [], "count": 0}

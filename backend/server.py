@@ -76,6 +76,17 @@ async def get_status_checks():
             r["timestamp"] = datetime.fromisoformat(r["timestamp"])
     return rows
 
+# --- debug: mongo ping
+@api.get("/debug/mongo")
+async def debug_mongo():
+    if db is None:
+        return {"connected": False, "reason": "db is None"}
+    try:
+        res = await db.command("ping")
+        return {"connected": True, "reply": res}
+    except Exception as e:
+        return {"connected": False, "error": str(e)}
+
 # --- inject DB into feature routers (if they support it)
 if hasattr(contact_routes, "set_db"):
     contact_routes.set_db(db)
@@ -88,24 +99,12 @@ api.include_router(contact_routes.router)    # /api/contact
 api.include_router(analytics_routes.router)  # /api/analytics
 app.include_router(api)
 
-# --- tiny Mongo debug endpoint
-@api.get("/debug/mongo")
-async def debug_mongo():
-    if db is None:
-        return {"connected": False, "reason": "db is None"}
-    try:
-        res = await db.command("ping")
-        return {"connected": True, "reply": res}
-    except Exception as e:
-        return {"connected": False, "error": str(e)}
-
 # --- shutdown
 @app.on_event("shutdown")
 async def shutdown_db():
     if client is not None:
         client.close()
 
-# logging
 logging.basicConfig(
     level=os.getenv("LOG_LEVEL", "INFO"),
     format="%(asctime)s - %(levelname)s - %(message)s"

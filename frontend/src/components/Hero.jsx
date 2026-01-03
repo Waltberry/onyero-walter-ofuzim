@@ -1,3 +1,5 @@
+// frontend/src/components/Hero.jsx
+
 import React from 'react';
 import { portfolioData } from '../data/mock';
 import { ExternalLink, Download } from 'lucide-react';

@@ -14,37 +14,31 @@ from routes import contact as contact_routes
 from routes import cv as cv_routes
 from routes import analytics as analytics_routes
 
-# --- env
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / ".env")
 
-SERVICE_NAME = os.getenv("SERVICE_NAME", "portfolio-api")
-CORS_ORIGINS = os.getenv("CORS_ORIGINS", "*").split(",")
-
-# Prefer MONGO_URI/MONGO_DB (matches your .env)
-MONGO_URI = os.getenv("MONGO_URI")
-MONGO_DB  = os.getenv("MONGO_DB", "portfolio")
-
-# --- app
 app = FastAPI(title="Portfolio API", version="1.0.0")
 api = APIRouter(prefix="/api")
 
-# --- DB (optional)
+# --- DB (optional; supports both var names)
+DB_NAME = os.getenv("DB_NAME") or os.getenv("MONGO_DB") or "portfolio"
+MONGO_URL = os.getenv("MONGO_URL") or os.getenv("MONGO_URI")
 client: Optional[AsyncIOMotorClient] = None
 db = None
-if MONGO_URI:
+if MONGO_URL:
     try:
-        client = AsyncIOMotorClient(MONGO_URI)
-        db = client[MONGO_DB]
-        logging.info("Mongo connected")
+        client = AsyncIOMotorClient(MONGO_URL)
+        db = client[DB_NAME]
+        logging.info("Mongo connected: %s / %s", MONGO_URL, DB_NAME)
     except Exception:
         logging.exception("Mongo init failed; continuing without DB")
 
 # --- CORS
+cors_origins = os.getenv("CORS_ORIGINS", "*").split(",")
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
-    allow_origins=CORS_ORIGINS,
+    allow_origins=cors_origins,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -52,9 +46,9 @@ app.add_middleware(
 # --- health
 @api.get("/health")
 async def health():
-    return {"ok": True, "service": SERVICE_NAME}
+    return {"ok": True, "service": "portfolio-api"}
 
-# --- demo status endpoints (DB optional)
+# --- demo status endpoints
 class StatusCheck(BaseModel):
     model_config = ConfigDict(extra="ignore")
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
@@ -87,14 +81,15 @@ async def get_status_checks():
             r["timestamp"] = datetime.fromisoformat(r["timestamp"])
     return rows
 
-# --- mount feature routers (hand DB into modules that accept it)
-if hasattr(contact_routes, "set_db"):   contact_routes.set_db(db)
-if hasattr(analytics_routes, "set_db"): analytics_routes.set_db(db)
+# --- mount feature routers (inject db when supported)
+if hasattr(contact_routes, "set_db"):
+    contact_routes.set_db(db)
+if hasattr(analytics_routes, "set_db"):
+    analytics_routes.set_db(db)
 
-api.include_router(cv_routes.router)        # /api/cv/...
-api.include_router(contact_routes.router)   # /api/contact/...
-api.include_router(analytics_routes.router) # /api/analytics/...
-
+api.include_router(cv_routes.router)         # /api/cv
+api.include_router(contact_routes.router)    # /api/contact
+api.include_router(analytics_routes.router)  # /api/analytics
 app.include_router(api)
 
 # --- shutdown
@@ -103,5 +98,5 @@ async def shutdown_db():
     if client:
         client.close()
 
-# --- logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+# logging
+logging.basicConfig(level=os.getenv("LOG_LEVEL", "INFO"), format="%(asctime)s - %(levelname)s - %(message)s")

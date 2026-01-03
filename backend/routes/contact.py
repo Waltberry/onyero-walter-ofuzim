@@ -1,11 +1,6 @@
-# backend/routes/contact.py
 from fastapi import APIRouter, HTTPException, Request
-from typing import Optional
-from models.contact import (
-    ContactSubmissionCreate,
-    ContactSubmission,
-    ContactResponse,
-)
+from typing import Optional, Any
+from models.contact import ContactSubmissionCreate, ContactSubmission, ContactResponse
 import logging
 
 logger = logging.getLogger(__name__)
@@ -13,9 +8,10 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/contact", tags=["contact"])
 
 # DB handle is injected from server.py via set_db()
-_db: Optional[object] = None
+_db: Optional[Any] = None
 
 def set_db(database):
+    """Inject a Motor/PyMongo database handle from server.py."""
     global _db
     _db = database
 
@@ -34,7 +30,7 @@ async def submit_contact_form(contact: ContactSubmissionCreate, request: Request
             user_agent=request.headers.get("user-agent"),
         )
 
-        if _db:
+        if _db is not None:
             await _db.contact_submissions.insert_one(submission.model_dump())
             logger.info("Stored contact submission from %s", contact.email)
         else:
@@ -51,10 +47,10 @@ async def submit_contact_form(contact: ContactSubmissionCreate, request: Request
 @router.get("/submissions")
 async def get_contact_submissions(skip: int = 0, limit: int = 50):
     """
-    Admin-style listing (no auth yet). If DB isn't configured, returns an empty list.
+    Admin listing (no auth yet). Returns empty list if DB isn't configured.
     """
     try:
-        if not _db:
+        if _db is None:
             return {"submissions": [], "count": 0}
 
         cursor = (
@@ -64,7 +60,7 @@ async def get_contact_submissions(skip: int = 0, limit: int = 50):
             .skip(int(skip))
             .limit(int(limit))
         )
-        submissions = await cursor.to_list(length=limit)
+        submissions = await cursor.to_list(length=int(limit))
         return {"submissions": submissions, "count": len(submissions)}
     except Exception as e:
         logger.exception("Error fetching submissions: %s", e)

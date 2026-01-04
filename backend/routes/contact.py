@@ -1,26 +1,30 @@
-from fastapi import APIRouter, Request
+# backend/routes/contact.py
+from fastapi import APIRouter, Request, BackgroundTasks
 from typing import Optional, Any
 from models.contact import ContactSubmissionCreate, ContactSubmission, ContactResponse
+from utils.notify import send_new_contact_email
 import logging
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/contact", tags=["contact"])
 
-# DB handle is injected from server.py via set_db()
 _db: Optional[Any] = None
-
 def set_db(database):
-    """Inject a Motor/PyMongo database handle from server.py."""
     global _db
     _db = database
 
 @router.post("", response_model=ContactResponse)
-async def submit_contact_form(contact: ContactSubmissionCreate, request: Request):
+async def submit_contact_form(
+    contact: ContactSubmissionCreate,
+    request: Request,
+    background_tasks: BackgroundTasks
+):
     """
     Accept a contact form submission.
     - Validates input (subject optional, message >= 10 chars).
-    - If Mongo is configured, persists to 'contact_submissions'.
-    - Always returns success for portfolio UX (we only log DB errors).
+    - Persists to 'contact_submissions' if Mongo is configured.
+    - Triggers an email notification via SendGrid (if configured).
+    - Always returns success for UX; logs DB/email errors.
     """
     submission = ContactSubmission(
         **contact.model_dump(),
@@ -28,25 +32,25 @@ async def submit_contact_form(contact: ContactSubmissionCreate, request: Request
         user_agent=request.headers.get("user-agent"),
     )
 
+    # Try to persist
     if _db is not None:
         try:
             await _db.contact_submissions.insert_one(submission.model_dump())
             logger.info("Stored contact submission from %s", contact.email)
         except Exception as e:
-            logger.exception("DB insert failed; returning success anyway: %s", e)
+            logger.exception("DB insert failed; continuing: %s", e)
     else:
         logger.warning("No DB configured; accepted contact but did not persist.")
+
+    # Fire-and-forget email
+    background_tasks.add_task(send_new_contact_email, submission.model_dump())
 
     return ContactResponse()
 
 @router.get("/submissions")
 async def get_contact_submissions(skip: int = 0, limit: int = 50):
-    """
-    Admin listing (no auth yet). Returns empty list if DB isn't configured or on errors.
-    """
     if _db is None:
         return {"submissions": [], "count": 0}
-
     try:
         cursor = (
             _db.contact_submissions

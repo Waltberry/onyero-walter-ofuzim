@@ -55,3 +55,11 @@ Thumbs.db
 # Deployment / platforms
 .vercel
 .chainlit
+
+# Env files
+.env
+*.env
+frontend/.env*
+backend/.env*
+!frontend/.env.example
+!backend/.env.example

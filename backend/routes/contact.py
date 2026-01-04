@@ -8,8 +8,10 @@ import logging
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/contact", tags=["contact"])
 
+# Injected from server.py
 _db: Optional[Any] = None
 def set_db(database):
+    """Inject a Motor/PyMongo database handle from server.py."""
     global _db
     _db = database
 
@@ -32,7 +34,7 @@ async def submit_contact_form(
         user_agent=request.headers.get("user-agent"),
     )
 
-    # Try to persist
+    # Try to persist (non-blocking UX)
     if _db is not None:
         try:
             await _db.contact_submissions.insert_one(submission.model_dump())
@@ -42,13 +44,16 @@ async def submit_contact_form(
     else:
         logger.warning("No DB configured; accepted contact but did not persist.")
 
-    # Fire-and-forget email
+    # Fire-and-forget email (no-op if SENDGRID_* not set)
     background_tasks.add_task(send_new_contact_email, submission.model_dump())
 
     return ContactResponse()
 
 @router.get("/submissions")
 async def get_contact_submissions(skip: int = 0, limit: int = 50):
+    """
+    Admin listing (no auth yet). Returns empty list if DB isn't configured or on errors.
+    """
     if _db is None:
         return {"submissions": [], "count": 0}
     try:

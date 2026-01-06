@@ -79,9 +79,9 @@ export default function Contact() {
         </div>
 
         {/* RIGHT: form */}
-        <div>
+        {/* <div>
           <ContactForm />
-        </div>
+        </div> */}
       </div>
     </section>
   );

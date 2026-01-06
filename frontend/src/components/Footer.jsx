@@ -14,7 +14,7 @@ const Footer = () => {
               © {currentYear} {profile.fullName}. All rights reserved.
             </p>
             <p className="label" style={{ marginTop: '8px' }}>
-              Built with React • Designed for Impact
+              Built with React • By Onyero Walter Ofuzim
             </p>
           </div>
 

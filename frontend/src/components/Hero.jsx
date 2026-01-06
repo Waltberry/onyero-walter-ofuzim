@@ -34,10 +34,10 @@ const Hero = () => {
                 <ExternalLink size={14} style={{ marginRight: '8px' }} />
                 Get in Touch
               </button>
-              <button className="btn" onClick={handleDownloadCV}>
+              {/* <button className="btn" onClick={handleDownloadCV}>
                 <Download size={14} style={{ marginRight: '8px' }} />
                 Download CV
-              </button>
+              </button> */}
             </div>
           </div>
 

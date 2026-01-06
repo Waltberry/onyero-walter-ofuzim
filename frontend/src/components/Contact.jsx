@@ -56,7 +56,7 @@ export default function Contact() {
           <h3 className="heading-sm" style={{ margin: "24px 0 12px" }}>Quick Actions</h3>
 
           <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-            <a className="btn btn-primary" href={`${API_BASE}/cv/download`} download>
+            <a className="btn btn-primary" href={`${import.meta.env.BASE_URL}cv/Onyero_Walter_Ofuzim_CV.pdf`} target = "_blank" rel = "noopener noreferrer" download>
               <Download size={14} style={{ marginRight: 8 }} />
               Download Full CV
             </a>

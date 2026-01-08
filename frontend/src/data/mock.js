@@ -143,7 +143,7 @@ export const portfolioData = {
     },
     {
       id: 2,
-      name: "kubeops-fastapi-operator",
+      name: "Kubeops-fastapi-operator",
       summary: "KOPF operator managing FastAPI + Postgres with CRDs, reconciliation, rollouts, and runbooks.",
       stack: ["Python", "Kubernetes", "KOPF", "PostgreSQL"],
       links: {
@@ -197,7 +197,7 @@ export const portfolioData = {
     },
     {
       id: 8,
-      name: "flowpilot-scada",
+      name: "Flowpilot-scada",
       summary: "PLC/HMI/SCADA tank control via Modbus TCP + InfluxDB + Grafana; optional OpenPLC ST.",
       stack: ["Modbus TCP", "InfluxDB", "Grafana", "OpenPLC"],
       links: {

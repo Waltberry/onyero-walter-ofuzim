@@ -2,7 +2,7 @@
 export const portfolioData = {
   profile: {
     fullName: "Onyero Walter Ofuzim",
-    title: "Data & Engineer",
+    title: "Data Professional & Engineer",
     tagline: "Data Professional (Analyst / Data Engineer) | Software Engineer | Control Systems (System ID/MPC) | Network Engineer",
     email: "onyero.ofuzim@gmail.com",
     phone: "+1 403 605 0955",
@@ -13,7 +13,7 @@ export const portfolioData = {
       linkedin: "https://linkedin.com/in/onyero-walter-ofuzim",
       researchgate: "https://www.researchgate.net/profile/Onyero-Ofuzim?ev=hdr_xprf"
     },
-    summary: "Engineer with ~2 years combined experience across data/analytics engineering, control systems, and battery modeling. Builds reproducible pipelines (PySpark/Delta/dbt/Airflow), ML prototypes (scikit-learn/XGBoost/PyTorch), and physics-based Li-ion models (SPMe/DFN in PyBaMM). Comfortable across Python/SQL/JS/Java, CI/CD (GitHub Actions), containers (Docker), and dashboards (Power BI/Streamlit). Proven track record shipping projects, mentoring as a TA, and delivering measurable ops/quality improvements in telco network analytics.",
+    summary: "Engineer with ~2 years combined experience across data/analytics engineering, control systems, and battery modeling. Builds reproducible pipelines, ML prototypes, and physics-based Li-ion models. Comfortable across Python/SQL/JS/Java, CI/CD, containers, and dashboards (Power BI/Streamlit). Proven track record shipping projects, mentoring as a TA, and delivering measurable ops/quality improvements in telco network analytics.",
     availability: "Immediate (MSc defense Jan/Feb)"
   },
 

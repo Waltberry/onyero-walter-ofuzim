@@ -128,7 +128,7 @@ export const portfolioData = {
     },
     {
       id: 4,
-      title: "Graduate Research Assistant",
+      title: "Undergraduate Research Assistant",
       company: "University of Benin",
       department: "Dept. of Electrical/Electronic Engineering",
       location: "Benin, Nigeria",
@@ -271,7 +271,6 @@ export const portfolioData = {
     ],
   },
 
-  // ✅ ONE projects section: categorized lists of project cards
   projects: {
     "Data Engineering & Lakehouse": [
       {

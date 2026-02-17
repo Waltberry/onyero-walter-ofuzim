@@ -118,6 +118,7 @@ export const portfolioData = {
         "Advanced Control & System Identification",
         "AI/ML",
         "Battery Modelling (SPMe/DFN)",
+        "Software Engineering",
       ],
     },
     {

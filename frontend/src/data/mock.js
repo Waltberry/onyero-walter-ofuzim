@@ -27,6 +27,63 @@ export const portfolioData = {
     ],
   },
 
+
+  awards: [
+    {
+      id: "aw-1",
+      title: "Department of Electrical and Software Engineering Funding",
+      issuer: "Department of Electrical and Software Engineering, University of Calgary",
+      date: "Jan 2024",
+      details: "Graduate funding support for M.Sc. studies (Schulich School of Engineering).",
+    },
+    {
+      id: "aw-2",
+      title: "Department / Faculty Scholarship Award (Exceptional Student)",
+      issuer: "Faculty of Engineering, University of Calgary",
+      date: "Jan 2024",
+      details:
+        "Exceptional student award recognizing outstanding academic performance and research potential.",
+    },
+
+    {
+      id: "aw-3",
+      title: "International Graduate Tuition Award",
+      issuer: "Office of the Provost, University of Calgary",
+      date: "Jan 2024",
+      details: "Tuition award supporting international graduate studies.",
+    },
+    {
+      id: "aw-4",
+      title: "Sri Lanka Imanust Graduate Scholarship Engineering Award",
+      issuer: "S. C. (Chan) and Dhamitha Wirasinghe",
+      date: "Jan 2024",
+      details: "Engineering scholarship award (University of Calgary).",
+    },
+    {
+      id: "aw-5",
+      title: "Federal Government of Nigeria Scholarship",
+      issuer: "Federal Government of Nigeria",
+      date: "Sep 2017",
+      details:
+        "Awarded to full-time university students meeting CGPA requirements (≥4.0/5.0 or equivalent).",
+    },
+    {
+      id: "aw-6",
+      title: "Jim Ovia Undergraduate Scholarship",
+      issuer: "Jim Ovia Foundation",
+      date: "Dec 2016",
+      details:
+        "Awarded based on intellectual ability, leadership, and commitment to societal impact.",
+    },
+    {
+      id: "aw-7",
+      title: "Delta State Bursary and Scholarship (DSBSB)",
+      issuer: "Delta State Government / DSBSB",
+      date: "Jan 2016",
+      details: "Bursary for Deltans in tertiary institutions.",
+    },
+  ],
+
   experience: [
     {
       id: 1,

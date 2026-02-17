@@ -15,7 +15,6 @@ const Hero = () => {
   };
 
   const handleDownloadCV = () => {
-    // Mock download - will be replaced with backend implementation
     alert('CV download will be implemented with backend');
   };
 
@@ -24,20 +23,53 @@ const Hero = () => {
       <div className="container">
         <div className="hero-content">
           <div className="hero-text">
-            <p className="label" style={{ marginBottom: '16px' }}>ENGINEER • AVAILABLE {profile.availability.toUpperCase()}</p>
+            <p className="label" style={{ marginBottom: '16px' }}>
+              ENGINEER • AVAILABLE {profile.availability?.toUpperCase()}
+            </p>
+
             <h1 className="heading-xl">{profile.fullName}</h1>
             <p className="hero-tagline">{profile.title}</p>
             <p className="hero-subtitle">{profile.tagline}</p>
-            
-            <div className="hero-cta">
+
+            {/* ✅ QUICK FACTS SECTION */}
+            {profile.quickFacts && (
+              <div
+                style={{
+                  marginTop: '20px',
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+                  gap: '12px'
+                }}
+              >
+                {profile.quickFacts.map((fact, index) => (
+                  <div
+                    key={index}
+                    style={{
+                      padding: '12px 16px',
+                      border: '1px solid rgba(255,255,255,0.08)',
+                      borderRadius: '10px',
+                      background: 'rgba(255,255,255,0.03)',
+                      fontSize: '0.9rem'
+                    }}
+                  >
+                    {fact}
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <div className="hero-cta" style={{ marginTop: '24px' }}>
               <button className="btn btn-primary" onClick={handleContact}>
                 <ExternalLink size={14} style={{ marginRight: '8px' }} />
                 Get in Touch
               </button>
-              {/* <button className="btn" onClick={handleDownloadCV}>
+
+              {/* 
+              <button className="btn" onClick={handleDownloadCV}>
                 <Download size={14} style={{ marginRight: '8px' }} />
                 Download CV
-              </button> */}
+              </button> 
+              */}
             </div>
           </div>
 

@@ -19,7 +19,7 @@ export const portfolioData = {
     },
     summary:
       "Engineer with ~2+ years combined experience across data/analytics engineering, backend software, control systems, and battery modeling. I build reproducible pipelines (Spark/Delta/dbt-style), APIs (FastAPI/.NET/Node), QA automation (pytest/Selenium), and physics-based Li-ion models (SPMe/DFN) with estimation (EKF/UKF) and System ID (ARX/BJ/PEM). Strong delivery habits: clear docs, testing, CI, and portfolio-quality repos.",
-    availability: "Immediate (MSc defense soon: Jan–Mar 2026)",
+    availability: "Immediate (MSc defense soon: Jan–May 2026)",
     quickFacts: [
       "Canada work-eligible (PGWP) • Open to relocate across Canada",
       "M.Sc. Electrical & Software Engineering @ University of Calgary (GPA 3.85) • Defense expected Winter 2026",
@@ -143,7 +143,7 @@ export const portfolioData = {
       company: "MTN",
       department: "NSMC",
       location: "Lagos, Nigeria",
-      dates: "Nov 2019 – May 2020",
+      dates: "Nov 2019 – June 2023",
       highlights: [
         "Supported TX/IP MPLS, Data & Internet Services, and NSS operations; monitored network health via SNMP",
         "Built Excel dashboards for daily/weekly reporting and RCA support",
